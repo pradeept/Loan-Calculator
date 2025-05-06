@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function useInputValidation(initialFields) {
+export default function useValidate(initialFields) {
   const [inputError, setInputError] = useState(
     Object.keys(initialFields).reduce(
       (acc, key) => ({ ...acc, [key]: false }),
@@ -29,6 +29,9 @@ export default function useInputValidation(initialFields) {
         error = true;
       } else if (name === "term" && (numericValue < 1 || numericValue > 30)) {
         message = "Term should be between 1 and 30";
+        error = true;
+      } else if (name === "exAmount" && (numericValue < 1 )) {
+        message = "Amount should be greater than 0";
         error = true;
       }
     }

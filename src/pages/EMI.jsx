@@ -1,10 +1,12 @@
 import {
+  Alert,
   Box,
   Button,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
+  Snackbar,
   Table,
   TableBody,
   TableCell,
@@ -15,10 +17,13 @@ import {
 } from "@mui/material";
 import NavBar from "../components/NavBar";
 import { useState } from "react";
-import useInputValidation from "../hooks/useValidate";
 import styles from "./styles.module.css";
 import generateEmis from "../utils/generateEmis";
 import calculateEMI from "../utils/calculateEmi";
+import useValidate from "../hooks/useValidate";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_EXCHANGE_API_URL;
 
 const currencyList = ["USD", "EUR", "INR", "GBP", "JPY", "AUD", "CAD"];
 
@@ -28,8 +33,9 @@ export default function EMI() {
   const [monthlyEmi, setMonthlyEmi] = useState(0);
   const [currency, setCurrency] = useState("USD");
   const [schedule, setSchedule] = useState([]);
-  const { inputError, errorMessage, validateField } =
-    useInputValidation(inputs);
+  const [toast, setToast] = useState(false);
+  const { inputError, errorMessage, validateField } = useValidate(inputs);
+  const [baseSchedule, setBaseSchedule] = useState([]); // keep the USD version
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -37,20 +43,51 @@ export default function EMI() {
     validateField(name, value);
     console.log(inputError);
   };
+  const handleCurrencyChange = async (e) => {
+    const selectedCurrency = e.target.value;
+    setCurrency(selectedCurrency);
+
+    if (selectedCurrency === "USD") {
+      setSchedule(baseSchedule); // set back the baseSchedule
+    } else {
+      try {
+        const res = await axios.get(API_URL);
+        const rate = res.data.conversion_rates[selectedCurrency];
+
+        // recalculate the table
+        const convertedSchedule = baseSchedule.map((row) => ({
+          ...row,
+          principal: (row.principal * rate).toFixed(2),
+          interest: (row.interest * rate).toFixed(2),
+          emi: (row.emi * rate).toFixed(2),
+          balance: (row.balance * rate).toFixed(2),
+        }));
+
+        setSchedule(convertedSchedule);
+      } catch (e) {
+        console.error("Currency conversion error", e);
+        setToast(true);
+      }
+    }
+  };
 
   const handleSubmit = () => {
-    setSchedule(() => generateEmis(inputs));
-    setShowCalculation(true);
-    console.log(schedule);
+    const scheduleUSD = generateEmis(inputs);
+    // Based on Dollar schedule table
+    // Calculate the conversion rates.
+    setBaseSchedule(scheduleUSD);
+    setSchedule(scheduleUSD);
     setMonthlyEmi(() =>
       calculateEMI(inputs.amount, inputs.rate, inputs.term).toFixed(2)
     );
+    setCurrency("USD");
+    setShowCalculation(true);
   };
 
   const calculationResult = (
     <Box>
       <Typography variant='h6' sx={{ padding: "1rem" }}>
-        Monthly EMI: {`${currency} ${monthlyEmi}`}
+        Monthly EMI: {`$ ${monthlyEmi}`}
       </Typography>
       <Box variant='div' className={styles.options_container}>
         <FormControl>
@@ -60,7 +97,7 @@ export default function EMI() {
             id='currency-select'
             value={currency}
             label='Currency'
-            onChange={(e) => setCurrency(e.target.value)}
+            onChange={(e) => handleCurrencyChange(e)}
           >
             {currencyList.map((item, index) => (
               <MenuItem key={index} value={item}>
@@ -178,6 +215,16 @@ export default function EMI() {
           </Button>
         </Box>
         {showCalculations && calculationResult}
+
+        <Snackbar
+          open={toast}
+          autoHideDuration={1000}
+          onClose={() => setToast(false)}
+        >
+          <Alert severity='error' variant='filled' sx={{ width: "100%" }}>
+            Something went wrong please try again!
+          </Alert>
+        </Snackbar>
       </Box>
     </>
   );
