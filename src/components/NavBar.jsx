@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
@@ -63,7 +61,6 @@ export default function NavBar(props) {
           </ListItem>
         ))}
       </List>
-      {/* <ThemeToggle /> */}
     </Box>
   );
 

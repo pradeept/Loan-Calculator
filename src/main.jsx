@@ -19,6 +19,7 @@ createRoot(document.getElementById("root")).render(
           <Route path='/' element={<EMI />} />
           <Route path='/rate-conversion' element={<LiveExRates />} />
           <Route path='/error' element={<ErrorPage />} />
+          <Route path="*" element={<ErrorPage />} />
         </Routes>
       </BrowserRouter>
     </ThemeContextComp>

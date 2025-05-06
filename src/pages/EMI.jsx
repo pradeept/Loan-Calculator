@@ -43,6 +43,7 @@ export default function EMI() {
     validateField(name, value);
     console.log(inputError);
   };
+
   const handleCurrencyChange = async (e) => {
     const selectedCurrency = e.target.value;
     setCurrency(selectedCurrency);
@@ -116,6 +117,9 @@ export default function EMI() {
       </Box>
       {/* table */}
       <Box variant='div' sx={{ maxHeight: 400, overflowY: "auto" }}>
+        <Typography variant="h5" sx={{margin:"2rem 0 0 1rem"}}>
+          Amortization Schedule ({currency})
+        </Typography>
         <Table stickyHeader>
           <TableHead>
             <TableRow>

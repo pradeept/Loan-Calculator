@@ -2,11 +2,9 @@ import calculateEMI from "./calculateEmi";
 
 export default function generateEmis(inputParam) {
     const { amount, rate, term } = inputParam;
-    console.log("generateemi: ", amount, rate, term)
     const r = rate / 12 / 100;
     const n = term * 12;
     const emi = calculateEMI(amount, rate, term);
-    console.log("generateemi: ", emi)
 
     let balance = amount;
     const schedule = [];
