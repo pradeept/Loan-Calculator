@@ -2,7 +2,10 @@ import { useState } from "react";
 
 export default function useInputValidation(initialFields) {
   const [inputError, setInputError] = useState(
-    Object.keys(initialFields).reduce((acc, key) => ({ ...acc, [key]: false }), {})
+    Object.keys(initialFields).reduce(
+      (acc, key) => ({ ...acc, [key]: false }),
+      {}
+    )
   );
 
   const [errorMessage, setErrorMessage] = useState(
@@ -36,20 +39,10 @@ export default function useInputValidation(initialFields) {
     return !error;
   };
 
-  const validateAll = () => {
-    let isValid = true;
-    Object.keys().forEach(([name, value]) => {
-      const valid = validateField(name, value);
-      if (!valid) isValid = false;
-    });
-    return isValid;
-  };
-
   return {
     inputError,
     errorMessage,
     validateField,
-    validateAll,
   };
 }
 

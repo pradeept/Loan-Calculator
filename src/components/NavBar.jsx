@@ -29,12 +29,14 @@ export default function NavBar(props) {
 
   useEffect(() => {
     setCurrPath(pathname);
-  }, []);
+  }, [pathname]);
+
   const paths = {
     Home: "/",
     "Exchange Rates (live)": "/rate-conversion",
     "Error Page": "/error",
   };
+
   const handleNav = (item) => {
     setCurrPath(paths[item]);
     navigate(paths[item]);
