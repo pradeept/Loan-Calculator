@@ -21,6 +21,18 @@ __React app to Calculate Monthly EMI, View Amortization Schedule and View Live C
 
 ``cd run dev``
 
+## Using Docker 🐋
+
+``git clone <repo link>``
+
+``cd <cloned-folder>``
+
+``docker build -t loan-calc:1.0.0 .``
+
+``docker run -p 80:80 --name loan-app loan-calc:1.0.0``
+
+You can access the site at: ``http://localhost:80`` or ``http://127.0.0.1:80``
+
 ## Example env 🔑
 ```
 VITE_EXCHANGE_API_URL=
